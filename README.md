@@ -1,77 +1,210 @@
-# Observations
+# Intrinsic Evaluation of Corpora and Script for Tokenization in Bangla
 
-## 1. Corpus Characteristics
+## Overview
 
-The mixed corpus was created by combining equal portions of the news and literature datasets, resulting in a corpus containing 250,000 documents. The corpus contains 8.39 million words and a vocabulary of 671,371 unique word forms. The Type-Token Ratio (TTR) of 0.0800 lies between that of the news corpus (0.0621) and literature corpus (0.0933), indicating that the lexical diversity of the mixed corpus is intermediate between the two domains. Similarly, the average word length of 6.37 characters also falls between the values observed for news and literature data.
+This repository contains the experimental framework, datasets, and analysis developed for the study:
 
-These statistics suggest that the mixed corpus successfully captures characteristics of both formal news writing and literary language, making it a suitable benchmark for evaluating tokenizer behavior across heterogeneous domains.
+**"Intrinsic Evaluation of Corpora and Script for Tokenization in Bangla"**
 
----
-
-## 2. Effect of Transliteration
-
-The Bengali corpus was transliterated into ISO format using the Aksharamukha transliteration framework. The transliterated corpus exhibited an expansion factor of 1.162, indicating that ISO representations require approximately 16.2% more characters than the original Bengali script. This increase is expected because several Bengali characters are represented by multiple Latin characters in ISO transliteration.
-
-Despite the increase in character count, the vocabulary ratio between the ISO and Bengali versions remained relatively stable (0.962), suggesting that transliteration primarily changes orthographic representation rather than lexical content. The transliterated corpus therefore provides a useful alternative script representation while preserving the linguistic information present in the original corpus.
+The objective of this work is to investigate how textual domain, script representation, vocabulary size, and tokenizer design influence subword tokenization behavior in Bangla. The study evaluates three widely used subword tokenization algorithms across multiple corpora and script representations using intrinsic evaluation metrics and qualitative morphological analysis.
 
 ---
 
-## 3. Impact of Vocabulary Size
+## Research Questions
 
-Across all tokenization schemes, increasing the vocabulary size from 5,000 to 50,000 consistently improved tokenization efficiency. Fertility decreased steadily as vocabulary size increased, indicating that words were represented using fewer subword units. At the same time, Characters Per Token (CPT) increased, implying that learned tokens became longer and more semantically meaningful.
+This study addresses the following questions:
 
-Word Fragmentation Rate (WFR) also decreased substantially with larger vocabularies, demonstrating that fewer words required decomposition into multiple subword segments. The reduction in token-count variance further suggests that tokenization became more stable and consistent across documents as the vocabulary size expanded.
-
-These observations confirm the expected trade-off between vocabulary size and segmentation granularity: larger vocabularies reduce fragmentation and improve compression at the cost of increased model size.
+1. How does textual domain influence tokenization quality?
+2. Does script representation affect subword segmentation behavior?
+3. Which tokenizer performs best for Bangla text?
+4. How does vocabulary size influence segmentation quality?
+5. Do tokenizer-generated subwords align with linguistic and morphological boundaries?
 
 ---
 
-## 4. Comparison of Tokenization Algorithms
+## Datasets
+
+Four corpora were evaluated:
+
+### 1. News Corpus
+
+A formal-domain corpus consisting of Bangla news articles.
+
+### 2. Literature Corpus
+
+A corpus containing literary texts including novels, stories, and other creative writing.
+
+### 3. Mixed Corpus
+
+A balanced combination of the News and Literature corpora, designed to represent heterogeneous language usage.
+
+### 4. Social Media Corpus
+
+A collection of user-generated Bangla social media comments containing informal language, spelling variation, colloquial expressions, and noisy text.
+
+---
+
+## Script Variants
+
+Each corpus was evaluated in two script representations:
 
 ### Bengali Script
 
-For the Bengali corpus at a vocabulary size of 50,000, BPE achieved the lowest fertility (1.3186), the highest CPT (4.0728), and the lowest WFR (0.2420). WordPiece achieved slightly inferior performance, while Unigram produced the highest fertility and fragmentation among the three methods.
+Native Bangla Unicode text.
 
-The ranking of tokenizer performance was:
+### ISO 15919 Script
 
-BPE > WordPiece > Unigram
+Romanized transliteration generated using the Aksharamukha framework.
 
-for all major efficiency metrics.
-
-### ISO Script
-
-A similar pattern was observed for the ISO-transliterated corpus. BPE again achieved the lowest fertility (1.3201) and WFR (0.2404), while WordPiece and Unigram followed in descending order of efficiency.
-
-The consistency of these results across both scripts suggests that BPE is the most effective tokenizer among the evaluated approaches for Bengali-language text.
+The script comparison allows investigation of whether orthographic representation influences tokenization behavior while preserving identical linguistic content.
 
 ---
 
-## 5. Influence of Transliteration on Tokenization
+## Tokenization Methods
 
-Comparing Bengali and ISO tokenization results reveals only minor differences in segmentation behavior. For example, at a vocabulary size of 50,000, Bengali BPE achieved a fertility of 1.3186, while ISO BPE achieved a fertility of 1.3201. Similar negligible differences were observed for WordPiece and Unigram.
+Three subword tokenization algorithms were evaluated:
 
-Although transliteration increased character counts and CPT values, it did not significantly affect fertility or fragmentation rates. This suggests that tokenizer efficiency is influenced more strongly by lexical diversity and corpus characteristics than by the choice of script representation.
+### Byte Pair Encoding (BPE)
 
----
+Frequency-based iterative merge algorithm.
 
-## 6. Cross-Domain Comparison
+### WordPiece
 
-When compared with the previously evaluated news and literature corpora, the mixed corpus consistently produced intermediate results. For example, under BPE with a vocabulary size of 50,000:
+Likelihood-based subword segmentation algorithm widely used in transformer architectures.
 
-| Domain | Fertility | CPT | WFR |
-|----------|----------|----------|----------|
-| News | 1.2745 | 4.3877 | 0.2102 |
-| Mixed | 1.3186 | 4.0728 | 0.2420 |
-| Literature | 1.3454 | 3.7880 | 0.2698 |
+### Unigram Language Model
 
-The same trend was observed across WordPiece and Unigram tokenizers. This behavior closely mirrors the lexical diversity measurements of the three corpora, where news exhibited the lowest TTR, literature the highest, and the mixed corpus occupied an intermediate position.
-
-These findings indicate that lexical diversity has a direct influence on tokenization difficulty. As lexical diversity increases, fertility and fragmentation increase while compression efficiency decreases.
+Probabilistic tokenization approach that selects subword units using a language-model objective.
 
 ---
 
-## 7. Overall Findings
+## Vocabulary Configurations
 
-The experimental results demonstrate that tokenizer performance is strongly influenced by both vocabulary size and corpus characteristics. Larger vocabularies consistently improve tokenization efficiency by reducing fragmentation and increasing token compactness. Among the evaluated tokenization methods, BPE consistently outperformed WordPiece and Unigram across all domains and scripts.
+Each tokenizer was trained using the following vocabulary sizes:
 
-Furthermore, transliteration into ISO script had only a marginal effect on tokenization efficiency, suggesting that domain-specific lexical variation plays a substantially larger role than script representation. Finally, the mixed corpus behaved predictably between the news and literature domains, providing further evidence that lexical diversity is a key factor governing subword tokenization behavior.
+```text
+5,000
+10,000
+15,000
+20,000
+25,000
+30,000
+35,000
+40,000
+45,000
+50,000
+```
+
+This enabled analysis of tokenizer behavior under different vocabulary constraints.
+
+---
+
+## Evaluation Metrics
+
+Tokenizer quality was assessed using intrinsic evaluation metrics:
+
+### Fertility
+
+Average number of tokens generated per word.
+
+Lower values indicate better segmentation efficiency.
+
+### Characters per Token (CPT)
+
+Average number of characters represented by each token.
+
+Higher values indicate better compression.
+
+### Word Fragmentation Ratio (WFR)
+
+Proportion of words split into multiple subword units.
+
+Lower values indicate more stable segmentation.
+
+### Average Tokens per Sentence
+
+Measures segmentation granularity at sentence level.
+
+### Segmentation Variance
+
+Measures consistency of tokenization across documents.
+
+### Out-of-Vocabulary Rate (OOV)
+
+Percentage of unseen words not adequately represented by the tokenizer.
+
+---
+
+## Morphological Analysis
+
+A qualitative evaluation was performed using manually selected Bangla words divided into:
+
+* Frequent words
+* Medium-frequency words
+* Rare words
+
+Subword segmentations produced by BPE, WordPiece, and Unigram were analyzed to determine their conformity to morphological boundaries and linguistic plausibility.
+
+---
+
+## Key Findings
+
+### 1. BPE Consistently Achieved the Best Performance
+
+Across all domains and scripts, BPE produced:
+
+* Lowest fertility
+* Lowest fragmentation ratio
+* Strong compression performance
+* Most stable segmentation behavior
+
+### 2. WordPiece Closely Followed BPE
+
+WordPiece generally produced results comparable to BPE, though it consistently showed slightly higher fertility and fragmentation values.
+
+### 3. Unigram Performed Worst Across Domains
+
+Unigram generated:
+
+* Higher fertility
+* Higher fragmentation
+* Lower compression
+
+In several experiments, performance saturated around 30k vocabulary size, suggesting limited benefit from larger vocabularies.
+
+### 4. Script Representation Influences Tokenization
+
+ISO 15919 consistently produced:
+
+* Higher CPT values
+* Longer token representations
+* Similar overall segmentation trends
+
+This indicates that script representation affects tokenization characteristics even when linguistic content remains unchanged.
+
+### 5. Domain Characteristics Matter
+
+Tokenization behavior varied substantially across domains.
+
+A particularly interesting finding was that the Social Media corpus achieved the lowest fertility values under BPE despite exhibiting the highest lexical diversity (TTR). This suggests that repetitive user-generated expressions allow effective subword learning even in highly diverse and noisy corpora.
+
+---
+
+## Reproducibility
+
+The repository includes:
+
+* Dataset preparation pipelines
+* Transliteration workflows
+* Tokenizer training scripts
+* Intrinsic evaluation framework
+* Morphological analysis experiments
+* Result generation notebooks
+
+All experiments were conducted using identical train/test splits and evaluation procedures across domains, scripts, tokenizers, and vocabulary sizes.
+
+---
+
+## Conclusion
+
+This work presents a comprehensive intrinsic evaluation of Bangla tokenization across multiple domains and script representations. The results demonstrate that tokenizer choice, corpus characteristics, vocabulary size, and script representation all influence subword segmentation quality. Among the evaluated methods, BPE consistently provided the most effective balance between compression, segmentation efficiency, and morphological consistency, making it a strong candidate for future Bangla NLP applications.
