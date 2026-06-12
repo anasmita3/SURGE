@@ -1,210 +1,422 @@
-# Intrinsic Evaluation of Corpora and Script for Tokenization in Bangla
+# Intrinsic Evaluation of Corpora and Script Representations for Bangla Tokenization
 
 ## Overview
 
-This repository contains the experimental framework, datasets, and analysis developed for the study:
+This repository presents a systematic intrinsic evaluation of Bangla subword tokenization across multiple corpus domains and corpus combinations. The study investigates how corpus composition and script representation influence tokenization quality in Bangla.
 
-**"Intrinsic Evaluation of Corpora and Script for Tokenization in Bangla"**
+The experiments are conducted on:
 
-The objective of this work is to investigate how textual domain, script representation, vocabulary size, and tokenizer design influence subword tokenization behavior in Bangla. The study evaluates three widely used subword tokenization algorithms across multiple corpora and script representations using intrinsic evaluation metrics and qualitative morphological analysis.
+* News text
+* Literary text
+* Social media text
+* Pairwise combinations of these domains
+* A balanced three-domain corpus
 
----
+Each corpus is evaluated in:
 
-## Research Questions
+* Native Bengali script
+* ISO transliterated representation generated using Aksharamukha
 
-This study addresses the following questions:
+Three tokenization algorithms are trained and evaluated:
 
-1. How does textual domain influence tokenization quality?
-2. Does script representation affect subword segmentation behavior?
-3. Which tokenizer performs best for Bangla text?
-4. How does vocabulary size influence segmentation quality?
-5. Do tokenizer-generated subwords align with linguistic and morphological boundaries?
+* Byte Pair Encoding (BPE)
+* WordPiece
+* Unigram Language Model
 
----
-
-## Datasets
-
-Four corpora were evaluated:
-
-### 1. News Corpus
-
-A formal-domain corpus consisting of Bangla news articles.
-
-### 2. Literature Corpus
-
-A corpus containing literary texts including novels, stories, and other creative writing.
-
-### 3. Mixed Corpus
-
-A balanced combination of the News and Literature corpora, designed to represent heterogeneous language usage.
-
-### 4. Social Media Corpus
-
-A collection of user-generated Bangla social media comments containing informal language, spelling variation, colloquial expressions, and noisy text.
+Vocabulary sizes range from 5,000 to 50,000 tokens.
 
 ---
 
-## Script Variants
+# Motivation
 
-Each corpus was evaluated in two script representations:
+Tokenization plays a critical role in modern NLP systems, particularly for morphologically rich languages such as Bangla.
 
-### Bengali Script
+Most tokenizer studies focus on:
 
-Native Bangla Unicode text.
+* English
+* Multilingual corpora
+* Downstream task performance
 
-### ISO 15919 Script
+However, little work examines:
 
-Romanized transliteration generated using the Aksharamukha framework.
+* The influence of corpus domain on Bangla tokenization
+* The effect of script transformation
+* Tokenizer behavior across heterogeneous Bangla corpora
 
-The script comparison allows investigation of whether orthographic representation influences tokenization behavior while preserving identical linguistic content.
-
----
-
-## Tokenization Methods
-
-Three subword tokenization algorithms were evaluated:
-
-### Byte Pair Encoding (BPE)
-
-Frequency-based iterative merge algorithm.
-
-### WordPiece
-
-Likelihood-based subword segmentation algorithm widely used in transformer architectures.
-
-### Unigram Language Model
-
-Probabilistic tokenization approach that selects subword units using a language-model objective.
+This repository addresses those questions through a large-scale intrinsic evaluation framework.
 
 ---
 
-## Vocabulary Configurations
+# Research Questions
 
-Each tokenizer was trained using the following vocabulary sizes:
+This project investigates:
 
-```text
-5,000
-10,000
-15,000
-20,000
-25,000
-30,000
-35,000
-40,000
-45,000
-50,000
-```
+1. How does corpus domain affect tokenization quality?
 
-This enabled analysis of tokenizer behavior under different vocabulary constraints.
+2. Does ISO transliteration improve tokenization efficiency compared to native Bengali script?
+
+3. Which tokenizer performs best for Bangla?
+
+4. How does vocabulary size influence tokenization quality?
+
+5. Do mixed-domain corpora produce more robust tokenizers than single-domain corpora?
 
 ---
 
-## Evaluation Metrics
+# Datasets
 
-Tokenizer quality was assessed using intrinsic evaluation metrics:
+## Literature Corpus
 
-### Fertility
+Source:
 
-Average number of tokens generated per word.
+* Vacaspati literary corpus
 
-Lower values indicate better segmentation efficiency.
+Contains:
 
-### Characters per Token (CPT)
+* Novels
+* Stories
+* Essays
+* Literary writings
+
+---
+
+## News Corpus
+
+Source:
+
+* IndicCorpV2 Bengali corpus
+
+Contains:
+
+* News reports
+* Editorial content
+* Contemporary formal language
+
+---
+
+## Social Media Corpus
+
+Source:
+
+* Bangla cyberbullying / social media comments dataset
+
+Contains:
+
+* Informal language
+* User-generated content
+* Noisy spellings
+* Slang expressions
+
+---
+
+# Experimental Design
+
+Seven separate experiments were performed.
+
+## Single-Domain Experiments
+
+### SURGE_2.ipynb
+
+News Corpus
+
+### SURGE_3.ipynb
+
+Literature Corpus
+
+### SURGE_5.ipynb
+
+Social Media Corpus
+
+---
+
+## Dual-Domain Experiments
+
+### SURGE_4.ipynb
+
+News + Literature
+
+### SURGE_6.ipynb
+
+News + Social Media
+
+### SURGE_7.ipynb
+
+Literature + Social Media
+
+---
+
+## Multi-Domain Experiment
+
+### SURGE_8.ipynb
+
+News + Literature + Social Media
+
+Balanced corpus:
+
+* 125,000 news documents
+* 125,000 literature documents
+* 125,000 social media documents
+
+Total:
+
+* 375,000 documents
+
+---
+
+# Processing Pipeline
+
+Each notebook follows the same workflow.
+
+## Step 1: Data Collection
+
+Domain-specific corpus acquisition and cleaning.
+
+## Step 2: Text Normalization
+
+* Unicode NFC normalization
+* Whitespace normalization
+* Empty document removal
+
+## Step 3: Corpus Statistics
+
+Computed statistics include:
+
+* Number of documents
+* Character count
+* Word count
+* Vocabulary size
+* Type-Token Ratio (TTR)
+* Average word length
+
+## Step 4: Transliteration
+
+Bengali → ISO
+
+using:
+
+Aksharamukha transliteration framework.
+
+## Step 5: Transliteration Validation
+
+Round-trip evaluation:
+
+Bengali → ISO → Bengali
+
+Metrics:
+
+* Exact Match Accuracy
+* Expansion Factor
+* Vocabulary Ratio
+
+## Step 6: Train-Test Split
+
+Typical split:
+
+* 90% training
+* 10% testing
+
+## Step 7: Tokenizer Training
+
+For each script:
+
+* Bengali
+* ISO
+
+For each tokenizer:
+
+* BPE
+* WordPiece
+* Unigram
+
+For each vocabulary size:
+
+* 5k
+* 10k
+* 15k
+* 20k
+* 25k
+* 30k
+* 35k
+* 40k
+* 45k
+* 50k
+
+---
+
+# Evaluation Metrics
+
+## OOV Rate
+
+Percentage of unknown words.
+
+Lower is better.
+
+---
+
+## Fertility
+
+Average number of tokens produced per word.
+
+Lower values indicate more compact tokenization.
+
+---
+
+## Characters per Token (CPT)
 
 Average number of characters represented by each token.
 
 Higher values indicate better compression.
 
-### Word Fragmentation Ratio (WFR)
+---
 
-Proportion of words split into multiple subword units.
+## Compression Ratio
 
-Lower values indicate more stable segmentation.
+Measures tokenization compactness.
 
-### Average Tokens per Sentence
-
-Measures segmentation granularity at sentence level.
-
-### Segmentation Variance
-
-Measures consistency of tokenization across documents.
-
-### Out-of-Vocabulary Rate (OOV)
-
-Percentage of unseen words not adequately represented by the tokenizer.
+Higher values are preferred.
 
 ---
 
-## Morphological Analysis
+## Word Fragmentation Rate (WFR)
 
-A qualitative evaluation was performed using manually selected Bangla words divided into:
+Measures the degree of word splitting.
 
-* Frequent words
-* Medium-frequency words
-* Rare words
-
-Subword segmentations produced by BPE, WordPiece, and Unigram were analyzed to determine their conformity to morphological boundaries and linguistic plausibility.
+Lower values indicate better preservation of word structure.
 
 ---
 
-## Key Findings
+## Token Length Variance
 
-### 1. BPE Consistently Achieved the Best Performance
+Measures segmentation consistency.
 
-Across all domains and scripts, BPE produced:
-
-* Lowest fertility
-* Lowest fragmentation ratio
-* Strong compression performance
-* Most stable segmentation behavior
-
-### 2. WordPiece Closely Followed BPE
-
-WordPiece generally produced results comparable to BPE, though it consistently showed slightly higher fertility and fragmentation values.
-
-### 3. Unigram Performed Worst Across Domains
-
-Unigram generated:
-
-* Higher fertility
-* Higher fragmentation
-* Lower compression
-
-In several experiments, performance saturated around 30k vocabulary size, suggesting limited benefit from larger vocabularies.
-
-### 4. Script Representation Influences Tokenization
-
-ISO 15919 consistently produced:
-
-* Higher CPT values
-* Longer token representations
-* Similar overall segmentation trends
-
-This indicates that script representation affects tokenization characteristics even when linguistic content remains unchanged.
-
-### 5. Domain Characteristics Matter
-
-Tokenization behavior varied substantially across domains.
-
-A particularly interesting finding was that the Social Media corpus achieved the lowest fertility values under BPE despite exhibiting the highest lexical diversity (TTR). This suggests that repetitive user-generated expressions allow effective subword learning even in highly diverse and noisy corpora.
+Lower values indicate more stable tokenization behavior.
 
 ---
 
-## Reproducibility
+# Main Findings
 
-The repository includes:
+Across all experiments, several consistent patterns emerge.
 
-* Dataset preparation pipelines
-* Transliteration workflows
-* Tokenizer training scripts
-* Intrinsic evaluation framework
-* Morphological analysis experiments
-* Result generation notebooks
+## 1. ISO Representation Improves Compression
 
-All experiments were conducted using identical train/test splits and evaluation procedures across domains, scripts, tokenizers, and vocabulary sizes.
+ISO-transliterated text consistently achieves:
+
+* Higher CPT
+* Better compression
+* Comparable fertility
+
+than native Bengali script.
 
 ---
 
-## Conclusion
+## 2. BPE Performs Best Overall
 
-This work presents a comprehensive intrinsic evaluation of Bangla tokenization across multiple domains and script representations. The results demonstrate that tokenizer choice, corpus characteristics, vocabulary size, and script representation all influence subword segmentation quality. Among the evaluated methods, BPE consistently provided the most effective balance between compression, segmentation efficiency, and morphological consistency, making it a strong candidate for future Bangla NLP applications.
+Across nearly all corpora:
+
+BPE > WordPiece > Unigram
+
+for:
+
+* CPT
+* Fertility
+* WFR
+* Compression
+
+---
+
+## 3. Vocabulary Growth Shows Diminishing Returns
+
+Performance improves rapidly between:
+
+5k → 30k
+
+After approximately:
+
+30k–40k
+
+the gains become relatively small.
+
+---
+
+## 4. Mixed-Domain Corpora Produce More Balanced Behavior
+
+Single-domain corpora exhibit domain-specific tokenization patterns.
+
+Mixed-domain corpora:
+
+* Improve vocabulary coverage
+* Reduce domain bias
+* Produce more general-purpose tokenizers
+
+---
+
+## 5. Social Media Is the Most Challenging Domain
+
+Compared with literature and news:
+
+* Higher lexical variability
+* Greater spelling variation
+* More fragmented tokenization
+
+This results in lower compression efficiency.
+
+---
+
+# Repository Structure
+
+```text
+SURGE/
+│
+├── SURGE_2.ipynb
+│   └── News Corpus Evaluation
+│
+├── SURGE_3.ipynb
+│   └── Literature Corpus Evaluation
+│
+├── SURGE_4.ipynb
+│   └── News + Literature Evaluation
+│
+├── SURGE_5.ipynb
+│   └── Social Media Evaluation
+│
+├── SURGE_6.ipynb
+│   └── News + Social Media Evaluation
+│
+├── SURGE_7.ipynb
+│   └── Literature + Social Media Evaluation
+│
+├── SURGE_8.ipynb
+│   └── News + Literature + Social Media Evaluation
+│
+└── README.md
+```
+
+---
+
+# Software and Libraries
+
+* Python
+* Hugging Face Datasets
+* Tokenizers
+* SentencePiece
+* Aksharamukha
+* NumPy
+* Pandas
+* Matplotlib
+
+---
+
+# Future Work
+
+Potential extensions include:
+
+* Extrinsic evaluation on downstream NLP tasks
+* Language modeling experiments
+* Morphology-aware tokenization
+* Cross-script tokenization studies
+* Bangla LLM pretraining analysis
+* Comparison with Indic multilingual tokenizers
+
+---
+
+
